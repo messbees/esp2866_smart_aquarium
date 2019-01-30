@@ -36,7 +36,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif (action == "GET_TEMP"):
             response = []
-            response["temp"] = last["temp"]
+            response["value"] = last["value"]
             response["date"] = last["date"]
             self.send_response(200)
             self.send_header("Content-type", "application/json")
@@ -44,8 +44,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response))
 
         elif (action == "POST_TEMP"):
-            temp = data["temp"]
-            last = {'date': now.strftime("%Y-%m-%d %H:%M"), 'temp': temp}
+            value = data["value"]
+            last = {'date': now.strftime("%Y-%m-%d %H:%M"), 'value': value}
             db.insert(last)
             self.send_response(200)
             self.end_headers()
