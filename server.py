@@ -37,8 +37,8 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         if (action == "GET_TEMP"):
             response = []
-            response["temp"] = last{"temp"}
-            response["date"] = last{"date"}
+            response["temp"] = last["temp"]
+            response["date"] = last["date"]
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.end_headers()
