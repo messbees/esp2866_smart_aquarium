@@ -20,6 +20,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         request_string = self.rfile.read(int(self.headers.getheader('content-length', 0)))
         print(request_string)
         data = json.dumps(request_string)
+        data = json.loads(request_string)
         print(data)
         #data = json.loads(self.data_string)
         LOGGER.info("---------------------------------------------------")
