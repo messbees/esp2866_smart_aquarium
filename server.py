@@ -18,11 +18,10 @@ version = '0.0'
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         request_string = self.rfile.read(int(self.headers.getheader('content-length', 0)))
-        print(request_string)
+        LOGGER.debug(request_string)
         request_string = str(request_string)
         data = json.loads(request_string)
-        print(data)
-        #data = json.loads(self.data_string)
+
         LOGGER.info("---------------------------------------------------")
         if not (data["version"] == version):
             self.send_response(405)
@@ -39,6 +38,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response))
 
         elif (action == "GET_TEMP"):
+            LOGGER.info("Someone asks for the last temperature value!")
             response = []
             response["value"] = last["value"]
             response["date"] = last["date"]
@@ -48,29 +48,16 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response))
 
         elif (action == "POST_TEMP"):
+            LOGGER.info("ESP2866 says: temperature is {}°С".format(value))
             value = data["value"]
             last = {'date': now.strftime("%Y-%m-%d %H:%M"), 'value': value}
             db.insert(last)
             self.send_response(200)
             self.end_headers()
-
+            LOGGER.info("Value saved.")
         else:
             self.send_response(404)
             self.end_headers()
-
-    def do_POST(self):
-        self.data_string = self.rfile.read(int(self.headers['Content-Length']))
-        data = json.loads(self.data_string)
-        print("")
-        LOGGER.info("---------------------------------------------------")
-
-        if not (data["version"] == version):
-            self.send_response(405)
-            self.end_headers()
-            return
-        action = data["action"]
-
-
 
 
 if __name__ == "__main__":
