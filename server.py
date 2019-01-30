@@ -18,7 +18,8 @@ version = '0.0'
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         request_string = self.rfile.read(int(self.headers.getheader('content-length', 0)))
-        data = json.loads(request_string)
+        print(request_string)
+        data = json.dumps(request_string)
         #data = json.loads(self.data_string)
         LOGGER.info("---------------------------------------------------")
         if not (data["version"] == version):
