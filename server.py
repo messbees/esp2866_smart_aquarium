@@ -18,15 +18,13 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.data_string = self.rfile.read(int(self.headers['Content-Length']))
         data = json.loads(self.data_string)
-        print("")
         LOGGER.info("---------------------------------------------------")
-        if not (data["version"] == Server.version):
+        if not (data["version"] == version):
             self.send_response(405)
             self.end_headers()
             return
         action = data["action"]
 
-        # calls after trying to fetch room state
         if (action == "TEST"):
             response = []
             response["text"] = "it works!"
@@ -35,7 +33,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(response))
 
-        if (action == "GET_TEMP"):
+        elif (action == "GET_TEMP"):
             response = []
             response["temp"] = last["temp"]
             response["date"] = last["date"]
@@ -43,7 +41,9 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(response))
-
+        else:
+            self.send_response(404)
+            self.end_headers()
 
     def do_POST(self):
         self.data_string = self.rfile.read(int(self.headers['Content-Length']))
@@ -51,7 +51,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         print("")
         LOGGER.info("---------------------------------------------------")
 
-        if not (data["version"] == Server.version):
+        if not (data["version"] == version):
             self.send_response(405)
             self.end_headers()
             return
@@ -64,6 +64,10 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.end_headers()
+        else:
+            self.send_response(404)
+            self.end_headers()
+
 
 if __name__ == "__main__":
     db = TinyDB('temp.json')
