@@ -13,6 +13,7 @@ import datetime
 LOGGER = logging.getLogger(__name__)
 now = datetime.datetime.now()
 last = {'date': '', 'temp': ''}
+version = '0.0'
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -41,6 +42,14 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(response))
+
+        elif (action == "POST_TEMP"):
+            temp = data["temp"]
+            last = {'date': now.strftime("%Y-%m-%d %H:%M"), 'temp': temp}
+            db.insert(last)
+            self.send_response(200)
+            self.end_headers()
+
         else:
             self.send_response(404)
             self.end_headers()
@@ -57,16 +66,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             return
         action = data["action"]
 
-        if (action == "POST_TEMP"):
-            temp = data["temp"]
-            last = {'date': now.strftime("%Y-%m-%d %H:%M"), 'temp': temp}
-            db.insert(last)
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-        else:
-            self.send_response(404)
-            self.end_headers()
+
 
 
 if __name__ == "__main__":
