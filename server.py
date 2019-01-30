@@ -12,6 +12,7 @@ import datetime
 
 LOGGER = logging.getLogger(__name__)
 now = datetime.datetime.now()
+db = TinyDB('temp.json')
 last = {'date': '', 'temp': ''}
 version = '0.0'
 
@@ -40,6 +41,9 @@ class RequestHandler(BaseHTTPRequestHandler):
         elif (action == "GET_TEMP"):
             LOGGER.info("Someone asks for the last temperature value!")
             response = []
+            table = db.table('temp')
+            last = table.get(doc_id=len(table))
+            print(last)
             response["value"] = last["value"]
             response["date"] = last["date"]
             self.send_response(200)
@@ -61,7 +65,6 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    db = TinyDB('temp.json')
     parser = argparse.ArgumentParser(description='HTTP Server')
     parser.add_argument('port', type=int, help='Listening port for HTTP Server')
     parser.add_argument('ip', help='HTTP Server IP')
