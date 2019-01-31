@@ -54,7 +54,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         elif (action == "POST_TEMP"):
             value = data["value"]
-            LOGGER.info("ESP2866 says: temperature is {}{}С".format(value, u"\u00b0"))
+            LOGGER.info("ESP2866 says: temperature is {}{}С".format(value, "°"))
             last = {'date': now.strftime("%Y-%m-%d %H:%M"), 'value': value}
             db.insert(last)
             self.send_response(200)
