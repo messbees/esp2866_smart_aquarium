@@ -9,7 +9,6 @@ import os
 import json
 from tinydb import TinyDB, Query
 import datetime
-#from exceptions import EvolutionServerException
 
 LOGGER = logging.getLogger(__name__)
 now = datetime.datetime.now()
@@ -20,15 +19,18 @@ version = '0.0'
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         request_string = self.rfile.read(int(self.headers.getheader('content-length', 0)))
-        LOGGER.debug(request_string)
         request_string = str(request_string)
         data = json.loads(request_string)
 
         LOGGER.info("---------------------------------------------------")
+        LOGGER.debug(request_string)
+
         if not (data["version"] == version):
+            LOGGER.warn("Wrong version!")
             self.send_response(405)
             self.end_headers()
             return
+
         action = data["action"]
 
         if (action == "TEST"):
@@ -44,7 +46,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             response = []
             table = db.table('temp')
             last = table.get(doc_id=len(table))
-            print(last)
+            LOGGER.debug(str(last))
             response["value"] = last["value"]
             response["date"] = last["date"]
             self.send_response(200)
@@ -57,10 +59,12 @@ class RequestHandler(BaseHTTPRequestHandler):
             LOGGER.info("ESP2866 says: temperature is {}{}С".format(value, "°"))
             last = {'date': now.strftime("%Y-%m-%d %H:%M"), 'value': value}
             db.insert(last)
+            LOGGER.info("Value saved.")
             self.send_response(200)
             self.end_headers()
-            LOGGER.info("Value saved.")
+
         else:
+            LOGGER.warn("Unknown command '{}'".format(action))
             self.send_response(404)
             self.end_headers()
 
