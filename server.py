@@ -53,8 +53,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(response))
 
         elif (action == "POST_TEMP"):
-            LOGGER.info("ESP2866 says: temperature is {}{}С".format(value, u"\u00b0"))
             value = data["value"]
+            LOGGER.info("ESP2866 says: temperature is {}{}С".format(value, u"\u00b0"))
             last = {'date': now.strftime("%Y-%m-%d %H:%M"), 'value': value}
             db.insert(last)
             self.send_response(200)
